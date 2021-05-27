@@ -18,6 +18,10 @@ except ImportError:
     reflection = None
 # project
 from .config import Config
+from .ctx import (
+    AppContext,
+    RequestContext
+)
 from .interceptor import (
     TracebackInterceptor,
     MiddlewareInterceptor,
@@ -29,7 +33,7 @@ from .macro import (
     K_TLS_CA_CERT,
     K_TLS_SERVER_CERT,
     K_TLS_SERVER_KEY,
-    K_REFLECTION
+    K_REFLECTION,
 )
 from .protos import (
     scan_pb2,
@@ -50,6 +54,12 @@ class Mask:
     # Store mask extensions
     extensions: t.Dict[str, t.Any] = {}
 
+    default_config = {
+        K_DEBUG: False,
+        K_MAX_WORKERS: 10,
+        K_REFLECTION: False,
+    }
+
     def __init__(self, name=None):
         """ Initialize mask server
 
@@ -59,7 +69,7 @@ class Mask:
         self.name: str = name or "mask"
 
         # The configuration dictionary as :class:`Config`.
-        self.config: "Config" = Config()
+        self.config: "Config" = Config(self.default_config)
 
         # The services just like the Blueprint in flask
         # But it must be consistent with the definition in ProtoBuf
@@ -155,6 +165,16 @@ class Mask:
         """ Auto build logger instance and cache it
         """
         return create_logger(self)
+
+    def app_context(self):
+        """ 新建一个应用上下文
+        """
+        return AppContext(self)
+
+    def request_context(self, params, context):
+        """ 请求上下文
+        """
+        return RequestContext(self, params, context)
 
     def before_request(self, func: t.Callable) -> t.Callable:
         """ Add custom hook function for before request

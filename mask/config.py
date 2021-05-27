@@ -10,6 +10,13 @@ class Config(dict):
     """ Extend origin dict class
     """
 
+    def __init__(self, config=None):
+        """ Initialize config instance
+        """
+        super().__init__()
+        if config and isinstance(config, dict):
+            self.update(config)
+
     def from_object(self, obj):
         """ Read config items from python object
         """

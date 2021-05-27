@@ -11,9 +11,9 @@ from setuptools import setup
 setup(
     name="Mask",
     install_requires=[
-        "grpcio>=1.37.1",
+        "grpcio>=1.38.0",
         "protobuf>=3.16.0",
-        "grpcio-tools>=1.37.1",
-        "grpcio-reflection>=1.37.1"
+        "grpcio-tools>=1.38.0",
+        "grpcio-reflection>=1.38.0"
     ]
 )
