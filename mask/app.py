@@ -47,6 +47,9 @@ class Mask:
     # Store all of the proto register funcs
     _register_funcs: t.Dict[str, t.Callable] = {}
 
+    # Store mask extensions
+    extensions: t.Dict[str, t.Any] = {}
+
     def __init__(self, name=None):
         """ Initialize mask server
 
