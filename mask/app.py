@@ -34,6 +34,7 @@ from .macro import (
     K_TLS_SERVER_CERT,
     K_TLS_SERVER_KEY,
     K_REFLECTION,
+    K_SO_REUSEPORT,
 )
 from .protos import (
     scan_pb2,
@@ -58,6 +59,7 @@ class Mask:
         K_DEBUG: False,
         K_MAX_WORKERS: 10,
         K_REFLECTION: False,
+        K_SO_REUSEPORT: 1,
     }
 
     def __init__(self, name=None):
@@ -144,7 +146,7 @@ class Mask:
         self._enable_reflection(server)
 
         # support ipv4 and ipv6
-        address = "%s:%s" % (host or "[::]", port or 10086)
+        address = "%s:%s" % (host or "[::]", port or 9090)
         server = self._bind_port(server, address, **kwargs)
         server.start()
 
@@ -208,6 +210,18 @@ class Mask:
         """ Register exception handler
         """
         self.exc_handler_spec[None][exception] = func
+
+    def register_service(self, service: Service) -> None:
+        """ 将Service注册到总路由上
+        """
+        if not service or not isinstance(service, Service):
+            raise ValueError("Invalid service to register!")
+
+        # 防止Service多次重复注册
+        if self._services.get(service.name):
+            raise AssertionError(f"Service is overwriting and existing: {service.name}")
+
+        self._services[service.name] = service
 
     def _bind_port(
             self,

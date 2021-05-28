@@ -4,6 +4,9 @@
 # All rights reserved
 # @Author: 'Wu Dong <wudong@eastwu.cn>'
 # @Time: '5/26/21 10:38 AM'
+from .macro import (
+    K_SO_REUSEPORT,
+)
 
 
 class Config(dict):
@@ -27,6 +30,8 @@ class Config(dict):
 
     def rpc_options(self):
         """ Format gRPC options
+
+        https://github.com/grpc/grpc/blob/v1.37.x/include/grpc/impl/codegen/grpc_types.h
         """
         options = list()
 
@@ -36,5 +41,8 @@ class Config(dict):
 
         options.append(("grpc.max_send_message_length", max_send_message_length))
         options.append(("grpc.max_receive_message_length", max_receive_message_length))
+
+        # If non-zero, allow the use of SO_REUSEPORT if it's available (default 1)
+        options.append(("grpc.so_reuseport", self[K_SO_REUSEPORT]))
 
         return options
