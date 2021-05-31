@@ -86,6 +86,11 @@ class MiddlewareInterceptor(ServerInterceptor):
     def _wrapper(self, behavior):
         @functools.wraps(behavior)
         def wrapper(request, context):
+            # Ignore method request for reflection
+            method = context._rpc_event.call_details.method
+            if method.decode() == "/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo":
+                return behavior(request, context)
+
             # 依次处理预请求
             for chain in self.before_request_chains:
                 resp = chain(request, context)
@@ -96,6 +101,8 @@ class MiddlewareInterceptor(ServerInterceptor):
             # 依次处理响应
             for chain in self.after_request_chains:
                 response = chain(response)
+                if not response:
+                    raise ValueError("Miss response from after response middleware: %s" % chain.__name__)
             return response
         return wrapper
 
