@@ -39,7 +39,7 @@ class TracebackInterceptor(ServerInterceptor):
 
         # 如果底层系统已经设置了异常，则直接返回即可
         if context._state.code != grpc.StatusCode.OK and context._state.details:
-            context.abort()
+            context.abort(context._state.code, context._state.details)
 
         if error_context is not None:
             context.abort(error_context[0], error_context[1])

@@ -39,7 +39,7 @@ def scan_pb2_grpc() -> t.Dict[str, t.Callable]:
             continue
 
         path = os.path.join(root, file)
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             # 查找有效的服务方法
             funcs = r_funcs.findall(f.read())
             if not funcs:
@@ -64,7 +64,7 @@ def scan_pb2() -> t.Dict[str, "FileDescriptor"]:
             continue
 
         path = os.path.join(root, file)
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             # 查找有效的服务方法
             service_names = r_desc.findall(f.read())
             if not service_names:

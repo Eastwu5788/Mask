@@ -62,7 +62,7 @@ class Service:
 
         self._router[method] = func
 
-    def _not_implement_method(self, _, context):
+    def _not_implement_method(self, context):
         """ Handler for not implement method
         """
         context.set_code(grpc.StatusCode.NOT_FOUND)
