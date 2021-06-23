@@ -4,11 +4,11 @@
     </a>
 </p>
 <p align="center">
-    <!--<a href="https://www.travis-ci.org/Eastwu5788/pre-request"><img alt="Travis" src="https://www.travis-ci.org/Eastwu5788/pre-request.svg?branch=master"></a>-->
-    <!--<a href="https://coveralls.io/github/Eastwu5788/pre-request?branch=master"><img alt="Coveralls" src="https://coveralls.io/repos/github/Eastwu5788/pre-request/badge.svg?branch=master"></a>-->
-    <!--<a href="https://github.com/Eastwu5788/pre-request/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/pypi/l/pre-request?color=brightgreen"></a>-->
-    <!--<a href="https://pre-request.readthedocs.io/en/master/"><img alt="Docs" src="https://readthedocs.org/projects/pre-request/badge/?version=master"></a>-->
-    <!--<a href="https://pypi.org/project/pre-request/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pre-request?color=brightgreen"></a>-->
+    <a href="https://travis-ci.com/github/Eastwu5788/Mask"><img alt="Travis" src="https://travis-ci.com/Eastwu5788/Mask.svg?branch=master"></a>
+    <a href="https://coveralls.io/github/Eastwu5788/Mask"><img alt="Coveralls" src="https://coveralls.io/repos/github/Eastwu5788/Mask/badge.svg?branch=master"></a>
+    <a href="https://github.com/Eastwu5788/Mask/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/Eastwu5788/Mask?color=brightgr"></a>
+    <a href="https://mask.readthedocs.io/en/latest/?badge=latest"><img alt="Docs" src="https://readthedocs.org/projects/mask/badge/?version=latest"></a>
+    <a href="https://pypi.org/project/Mask/"><img alt="PyPI" src="https://img.shields.io/pypi/v/Mask?color=brightgreen"></a>
     <a href="https://gitter.im/mask-cn/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge"><img alt="IM" src="https://badges.gitter.im/pre-request/community.svg"/></a>
 </p>
 
