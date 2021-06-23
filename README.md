@@ -1,5 +1,7 @@
 ## Mask
 
+[![Join the chat at https://gitter.im/mask-cn/community](https://badges.gitter.im/mask-cn/community.svg)](https://gitter.im/mask-cn/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A simple grpc server just like flask.
 
 ### Install
