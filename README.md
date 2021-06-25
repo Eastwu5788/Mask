@@ -26,7 +26,7 @@ pip install mask
 
 ### Document
 
-`Mask` manual could be found at: 
+`Mask` manual could be found at:  https://mask.readthedocs.io/en/latest
 
 
 ### A Simple Example
@@ -68,8 +68,8 @@ ETH: 0xb098600a9a4572a4894dce31471c46f1f290b087
 
 ### Links
 
-* Documentaion: 
-* Release:
+* Documentaion: https://mask.readthedocs.io/en/latest
+* Release: https://github.com/Eastwu5788/Mask/releases
 * Code: https://github.com/Eastwu5788/Mask
 * Issue tracker: https://github.com/Eastwu5788/Mask/issues
 * Test status: https://coveralls.io/github/Eastwu5788/Mask

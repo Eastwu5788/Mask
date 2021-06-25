@@ -39,7 +39,7 @@ class AppContext:
             if self._ref_cnt <= 0:
                 if exc is _sentinel:
                     exc = sys.exc_info()[1]
-                # TODO: teardown 回调函数支持
+                self.app.do_teardown_app_context(exc)
         finally:
             _app_ctx_stack.pop()
 
