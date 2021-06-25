@@ -16,4 +16,4 @@ User's Guide
     installation
     quickstart
     tutorial
-
+    example
