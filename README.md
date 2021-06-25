@@ -14,7 +14,7 @@
 
 ## Mask
 
-A simple grpc server just like flask.
+A gRpc server just like `Flask`.
 
 ### Install
 
@@ -57,6 +57,86 @@ def say_hello(request, context):
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=1020)
 ```
+
+### Service
+
+`Mask` support `Service` to organize a group of route which is likely with `Blueprint` in `Flask`.
+
+```
+
+    # 3p
+    from mask import Mask, Service
+    from mask.parse import pre, Rule
+    # project
+    from examples.protos.hello_pb2 import HelloResponse
+
+
+    app = Mask(__name__)
+    app.config["REFLECTION"] = True
+
+
+    # Bind service to application
+    service = Service(name="Hello")
+    app.register_service(service)
+
+
+    rule = {
+        "name": Rule(type=str, gte=2, dest="Name")
+    }
+
+    # Service route
+    @service.route(method="SayHello")
+    def say_hello_handler(request, context):
+        """ Handler SayHello request
+        """
+        params = pre.parse(rule=rule, request=request, context=context)
+        return HelloResponse(message="Hello Reply: %s" % params["Name"])
+
+
+    if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=1020)
+
+```
+
+### Middleware 
+
+`Mask` support middleware to hook before request and after request.
+
+```
+# 3p
+from mask import Mask
+# project
+from examples.protos.hello_pb2 import HelloResponse
+
+
+app = Mask(__name__)
+app.config["REFLECTION"] = True
+
+
+def before_request(request, context):
+    print(request.name)
+
+
+def after_request(response):
+    print(response.message)
+
+
+app.before_request(before_request)
+app.after_request(after_request)
+
+
+@app.route(method="SayHello", service="Hello")
+def say_hello_handler(request, context):
+    """ Handler SayHello request
+    """
+    return HelloResponse(message="Hello Reply: %s" % request.name)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=1020)
+```
+
+
 
 ### Coffee
 
