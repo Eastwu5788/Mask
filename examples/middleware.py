@@ -20,6 +20,7 @@ def before_request(request, context):
 
 def after_request(response):
     print(response.message)
+    return response
 
 
 app.before_request(before_request)
