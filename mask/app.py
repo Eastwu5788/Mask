@@ -8,6 +8,7 @@
 from collections import defaultdict
 import logging
 import os
+import sys
 import typing as t
 from concurrent import futures
 # 3p
@@ -42,6 +43,9 @@ from .protos import (
 )
 from .service import Service
 from .utils import LockedCachedProperty
+
+
+_sentinel = object()
 
 
 class Mask:
@@ -97,6 +101,10 @@ class Mask:
             t.Optional[str],
             t.Dict[t.Type[Exception], t.Callable]
         ] = defaultdict(lambda: defaultdict(dict))
+
+        # Teardown hook
+        # app context teardown hook funcs
+        self.teardown_app_context_funcs: t.List[t.Callable] = []
 
     def route(
             self,
@@ -205,6 +213,22 @@ class Mask:
             self.register_exception_handler(exception, func)
             return func
         return decorator
+
+    def teardown_app_context(self, func: t.Callable) -> t.Callable:
+        """ Decorator for register teardown funcs
+
+        :param func: decorator funcs
+        """
+        self.teardown_app_context_funcs.append(func)
+        return func
+
+    def do_teardown_app_context(self, exc: t.Optional[BaseException] = None) -> None:
+        """ Called right before the application context is popped
+        """
+        if exc is _sentinel:
+            exc = sys.exc_info()[1]
+        for func in reversed(self.teardown_app_context_funcs):
+            func(exc)
 
     def register_exception_handler(self, exception: t.Type[Exception], func: t.Callable) -> None:
         """ Register exception handler
