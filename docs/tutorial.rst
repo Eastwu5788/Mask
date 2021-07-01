@@ -70,13 +70,13 @@ Application Setup
 
 `Mask` 支持多种方式从配置对象中读取配置，目前提供的方法如下:
 
-=================== ============================================
+=================== ===============================================
     Method              Intro
-=================== ============================================
+=================== ===============================================
  def from_object          Load config items from object attribute
  def from_dict            Load config items from dict instance
  def from_json            Load config items from json string
-=================== ============================================
+=================== ===============================================
 
 .. code-block:: python
 
@@ -103,6 +103,7 @@ CA_CERT                         TLS CA file path                            None
 MAX_SEND_MESSAGE_LENGTH         Max send message length                     10MB
 MAX_RECEIVE_MESSAGE_LENGTH      Max receive message content length          10MB
 GRPC_OPTIONS                    gRpc setup Options                          None
+HEALTH                          Enable health checking feature              None
 ============================ ======================================== ===================
 
 特别说明:
@@ -185,8 +186,8 @@ Middleware
 
 .. code-block::
 
-    from faker import Faker
-    app = Faker()
+    from mask import Mask
+    app = Mask()
 
     class CustomInterceptor(grpc.ServerInterceptor):
         """ 自定义拦截器的一个空白实现，无任何业务逻辑
@@ -195,15 +196,61 @@ Middleware
         def intercept_service(self, continuation, handler_call_details):
             return continuation(handler_call_details)
 
-    # 将自定义拦截器注册进入 `Faker` 中
+    # 将自定义拦截器注册进入 `Mask` 中
     app.register_interceptor(CustomInterceptor())
 
     if __name__ == "__main__":
         app.run()
 
 
+Stream
+-----------
 
-* TODO: 支持 `stream` 请求下的中间件实现
+`Mask` 支持 `双向流式RPC` , 您只需要在 `ProtoBuf` 文件中标识请求入参或者响应类型为 `stream` 即可。
+如果您使用 `mask.pre` 来校验流式请求参数的话，推荐使用 `pre.parse` 函数来解析迭代后的单个 `request`。
+
+.. code-block:: python
+
+    # 3p
+    from mask.parse import pre, Rule
+
+
+    rule = {
+        "userId": Rule(required=True, type=int, lte=200, trim=True, dest="user_id")
+    }
+
+
+    @app.route(method="UserInfo", service="User")
+    def user_info_handler(request, context):
+        """ 查询用户信息
+        """
+        for item in request:
+            item = pre.parse(rule=rule, request=item, context=context)
+            yield HelloResponse(message="Hello %s" % item["user_id"])
+
+
+
+当然 `pre.catch` 同样支持自动化的将可迭代的 `request` 进行校验，但是它会一次性处理所有的请求参数，如果您的入参较多的话，建议使用 `pre.parse`.
+
+.. code-block:: python
+
+    # 3p
+    from mask.parse import pre, Rule
+
+
+    rule = {
+        "userId": Rule(required=True, type=int, lte=200, trim=True, dest="user_id")
+    }
+
+
+    @app.route(method="UserInfo", service="User")
+    @pre.catch(rule=rule)
+    def user_info_handler(params):
+        """ 查询用户信息
+        """
+        # 这里的params是交验完所有入参的数组(不建议用于处理实时数据流)
+        for item in params:
+            yield HelloResponse(message="Hello %s" % item["user_id"])
 
 
 Exception
@@ -242,7 +289,7 @@ Context
 .. code-block:: python
 
     # 线程安全的全局参数
-    from faker import g, request, current_app
+    from mask import g, request, current_app
 
 
 Extensions
@@ -315,5 +362,4 @@ Deploy to Production
 运行 `Mask` 非常简单，直接调用 `app.run()` 即可。
 在生产环境中推荐使用 `supervisor` 或者 `docker-compose` 等工具监听服务的运行状态。
 
-* TODO: `HealthService` 服务健康检查支持
 * TODO: `Prometheus` 指标接口实现

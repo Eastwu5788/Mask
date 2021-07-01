@@ -17,6 +17,10 @@ try:
     from grpc_reflection.v1alpha import reflection
 except ImportError:
     reflection = None
+try:
+    from grpc_health.v1 import health
+except ImportError:
+    health = None
 # project
 from .config import Config
 from .ctx import (
@@ -30,6 +34,7 @@ from .interceptor import (
 from .logging import create_logger
 from .macro import (
     K_DEBUG,
+    K_HEALTH,
     K_MAX_WORKERS,
     K_TLS_CA_CERT,
     K_TLS_SERVER_CERT,
@@ -106,6 +111,9 @@ class Mask:
         # app context teardown hook funcs
         self.teardown_app_context_funcs: t.List[t.Callable] = []
 
+        # Health Server
+        self.health = None
+
     def route(
             self,
             method: t.Optional[str] = None,
@@ -150,6 +158,8 @@ class Mask:
 
         # Bind service to gRPC server
         self._bind_service(server)
+        # Enable health checking
+        self._enable_health(server)
         # Enable gRPC server reflection feature
         self._enable_reflection(server)
 
@@ -319,3 +329,16 @@ class Mask:
                 raise ValueError(f"Can't find descriptor for service '{s}', please check *_pb2.py file exists!")
             service_names.append(descriptor.services_by_name[s].full_name)
         reflection.enable_server_reflection((*service_names, reflection.SERVICE_NAME), server)
+
+    def _enable_health(self, server: "grpc.Server") -> None:
+        """ Support healthy check feature
+        """
+        if not self.config.get(K_HEALTH):
+            return
+
+        if not health:
+            raise ImportError("Import error for package 'grpcio-health-checking'! \n "
+                              "You can use 'pip install mask[health]' to install.")
+
+        self.health = health.HealthServicer()
+        health._health_pb2_grpc.add_HealthServicer_to_server(self.health, server)

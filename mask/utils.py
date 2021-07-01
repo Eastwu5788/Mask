@@ -8,6 +8,8 @@
 import typing as t
 from inspect import isbuiltin
 from threading import RLock
+# 3p
+import grpc
 
 
 class _Missing:
@@ -91,6 +93,12 @@ _RPC_BUILTIN_KEYS = {
 def deserialize_request(obj):
     """ 反序列化gRPC请求对象
     """
+    if isinstance(obj, grpc._server._RequestIterator):
+        fmt_rst = list()
+        for item in obj:
+            fmt_rst.append(deserialize_request(item))
+        return fmt_rst
+
     # 非gRPC生成的对象，不做处理
     if not hasattr(obj, "DESCRIPTOR"):
         return obj
