@@ -14,6 +14,13 @@ setup(
         "grpcio>=1.38.0",
         "protobuf==3.16.0",
         "grpcio-tools>=1.38.0",
-        "grpcio-reflection>=1.38.0"
-    ]
+        "grpcio-reflection>=1.38.0",
+    ],
+    extras_require={
+        "health": [
+            "grpcio-health-checking>=1.38.0"
+        ],
+        "prometheus": [
+        ]
+    }
 )
