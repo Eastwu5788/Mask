@@ -55,7 +55,6 @@ class TracebackInterceptor(ServerInterceptor):
                 ctx.push()
                 return behavior(request, context)
             except Exception as e:
-                # TODO: 通过解析 context._rpc_event.call_details，找出对应的 Service，优先回调异常
                 # 通过 '__mro__' 函数依次找到异常的继承关系
                 for cls in type(e).__mro__:
                     handler = self.exc_handler_funcs.get(cls)

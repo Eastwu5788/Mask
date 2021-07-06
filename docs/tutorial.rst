@@ -300,12 +300,13 @@ Extensions
 目前提供的插件如下:
 
 
-==================== ================================ ====================================================
+==================== =========================================== ====================================================
    Project Name                         Intro                              Links
-==================== ================================ ====================================================
-Mask-SQAlchemy        Mask extension for SQLAlchemy
-Mask-Redis            Mask extension for Redis
-==================== ================================ ====================================================
+==================== =========================================== ====================================================
+Mask-SQAlchemy        SQLAlchemy extension for Mask                 https://github.com/Eastwu5788/Mask-SQLAlchemy
+Mask-Redis            Redis extension for Mask                      https://github.com/Eastwu5788/Mask-Redis
+Mask-Prometheus       Prometheus monitor extension for Mask         https://github.com/Eastwu5788/Mask-Prometheus
+==================== =========================================== ====================================================
 
 
 Reflection
@@ -361,5 +362,3 @@ Deploy to Production
 
 运行 `Mask` 非常简单，直接调用 `app.run()` 即可。
 在生产环境中推荐使用 `supervisor` 或者 `docker-compose` 等工具监听服务的运行状态。
-
-* TODO: `Prometheus` 指标接口实现
