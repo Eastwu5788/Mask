@@ -9,8 +9,9 @@ from setuptools import setup
 
 
 setup(
-    name="Mask",
+    name="mask",
     install_requires=[
+        "click>=8.0.1",
         "grpcio>=1.38.0",
         "protobuf==3.16.0",
         "grpcio-tools>=1.38.0",
@@ -19,8 +20,6 @@ setup(
     extras_require={
         "health": [
             "grpcio-health-checking>=1.38.0"
-        ],
-        "prometheus": [
         ]
     }
 )
