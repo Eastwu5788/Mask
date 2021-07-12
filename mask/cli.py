@@ -7,23 +7,43 @@
 # sys
 import os
 import pkg_resources
-import sys
 import typing as t
 # 3p
 import click
 from grpc_tools import protoc
 
 
-def _expand_path(path: str) -> str:
+def _expand_path(path: str) -> t.Optional[str]:
     """ Expand path by repeatedly applying `expandvars` and `expanduser`
      until interpolation stops having any effect
     """
+    if not path:
+        return None
+
     while True:
         interpolated = os.path.expanduser(os.path.expandvars(path))
         if interpolated == path:
             return interpolated
         else:
             path = interpolated
+
+
+def _expand_multiple(objs: t.Union[t.List, t.Tuple, t.Set]) -> list:
+    """ Exapand multiple params to support value combine with comma
+    :param objs:
+    :return:
+    """
+    fmt_rst = list()
+    if not objs or not isinstance(objs, (list, tuple, set)):
+        return fmt_rst
+
+    for v in objs:
+        if isinstance(v, str):
+            fmt_rst.extend(v.split(","))
+            continue
+        fmt_rst.append(v)
+
+    return fmt_rst
 
 
 def _replace_content(dest: str, callback: t.Callable) -> None:
@@ -45,6 +65,9 @@ def _build_protobuf(proto_file, python_out, strict_mode=False):
     :param python_out: Python output path
     """
     well_known_protos_include = pkg_resources.resource_filename('grpc_tools', '_proto')
+
+    if not python_out:
+        python_out = os.path.dirname(proto_file)
 
     command = [
                   'grpc_tools.protoc',
@@ -97,31 +120,64 @@ def compiler(**kwargs) -> None:
     if not os.path.exists(protobuf_path):
         raise FileNotFoundError(f"Can't find protobuf at path: {protobuf_path}")
 
-    python_out = _expand_path(kwargs.get("python_out"))
-    if not python_out:
-        python_out = protobuf_path
-
-    _build_protobuf(protobuf_path, python_out)
+    _build_protobuf(protobuf_path, _expand_path(kwargs.get("python_out")), kwargs["strict_mode"])
 
 
 @click.command(name="package")
 @click.option(
-    "--path",
+    "--package_root",
     "-p",
     required=True,
     help="Package root path"
 )
 @click.option(
     "--exclude_path",
+    multiple=True,
     help="Exclude path to ignore",
 )
 @click.option(
     "--exclude_file",
-    help="Exclude protobuf file name"
+    multiple=True,
+    help="Exclude protobuf file name",
+)
+@click.option(
+    "--package_out",
+    help="Which packages to output compiled python file"
+)
+@click.option(
+    "--strict_mode",
+    default=True,
+    is_flag=True,
+    help="Run compile with strict mode"
 )
 def package(**kwargs) -> None:
     """ Auto compile all of the protobuf in the package
     """
+    package_root = _expand_path(kwargs.get("package_root"))
+    if not os.path.exists(package_root):
+        raise FileNotFoundError(f"Can't find package path at: {package_root}")
+
+    exclude_path = _expand_multiple(kwargs.get("exclude_path"))
+    exclude_path = {_expand_path(v) for v in exclude_path}
+
+    exclude_file = _expand_multiple(kwargs.get("exclude_file"))
+    exclude_file = {_expand_path(v) for v in exclude_file}
+
+    inclusion_root = os.path.abspath(package_root)
+    for root, _, files in os.walk(inclusion_root):
+
+        if root in exclude_path:
+            continue
+
+        for filename in files:
+            if not filename.endswith(".proto"):
+                continue
+
+            full_path = os.path.abspath(os.path.join(root, filename))
+            if filename in exclude_file or full_path in exclude_file:
+                continue
+
+            _build_protobuf(full_path, _expand_path(kwargs.get("package_out")), kwargs["strict_mode"])
 
 
 @click.group(name="main", help="""
