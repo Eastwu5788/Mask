@@ -1,15 +1,27 @@
+os: linux
+dist: xenial
 language: python
+
+
 python:
   - "3.6"
+
+before_install:
+  - python -m pip install --upgrade pip
 install:
   - pip install -r requirements.txt
+
+
+script:
+  - flake8 mask
+  - pylint mask
+
 
 
 deploy:
   provider: pypi
   username: __token__
   password: ${MASKTOKEN}
-  skip_cleanup: true
   on:
     python: 3.6
     branch: master

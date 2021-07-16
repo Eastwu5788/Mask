@@ -4,6 +4,7 @@ exclude =
     .git,
     __pycache__,
     *.md,
+    __init__.py,
 
 max-line-length=125
 max-complexity=16
