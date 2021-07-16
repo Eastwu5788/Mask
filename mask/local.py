@@ -64,7 +64,7 @@ class LocalStack:
         self._local.__release_local__()
 
     @property
-    def __ident_func(self):
+    def __ident_func(self):  # pylint: disable=unused-private-member
         return self._local.__ident_func__
 
     @__ident_func.setter

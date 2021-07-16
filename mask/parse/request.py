@@ -293,16 +293,22 @@ class PreRequest:
             filter_obj(params=rst)
 
     @staticmethod
-    def _fmt_origin_params(request=None, context=None):
+    def _fmt_origin_params(request=None, context=None, **kwargs):
         """ 格式化原始入参
 
         :param request: 原始请求
         :param context: 原始上下文
+        :param kwargs: 附加参数
         """
         options = {}
+
+        if kwargs.get("values"):
+            options["values"] = kwargs["values"]
+
         # 如果用户不填入request和上下文的话，则使用glib的全局请求和上下文
-        if not request or not hasattr(request, "DESCRIPTOR"):
+        elif not request or not hasattr(request, "DESCRIPTOR"):
             options["values"] = req.values
+
         else:
             options["values"] = deserialize_request(request)
 
@@ -334,6 +340,9 @@ class PreRequest:
         # deserialize origin input data
         options.update(self._fmt_origin_params(request, context))
 
+        if isinstance(options["values"], list):
+            raise TypeError("Can't support Iterator type of params in `parse`")
+
         try:
             # use simple filter to handler params
             for k, r in rule.items():
@@ -359,8 +368,16 @@ class PreRequest:
                 if not rule and not options:
                     return func(*args, **kwargs)
 
-                # parse input params
-                fmt_rst = self.parse(rule, **options)
+                # Simple unary request
+                if not isinstance(req.values, list):
+                    fmt_rst = self.parse(rule, **options)
+
+                # Steam request
+                else:
+                    fmt_rst = list()
+                    for _it in req.values:
+                        options["values"] = _it
+                        fmt_rst.append(self.parse(rule, **options))
 
                 # assignment params to func args
                 if self.store_key in getfullargspec(func).args:
