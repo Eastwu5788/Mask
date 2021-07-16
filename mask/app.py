@@ -149,9 +149,10 @@ class Mask:
             *self.interceptors.get(None, ())
         )
 
+        max_workers = self.config.get(K_MAX_WORKERS, 10)
         # Generate gRPC server
         server = grpc.server(
-            futures.ThreadPoolExecutor(max_workers=self.config.get(K_MAX_WORKERS, 10)),  # pylint: disable=consider-using-with
+            futures.ThreadPoolExecutor(max_workers=max_workers),  # pylint: disable=consider-using-with
             interceptors=interceptors,
             options=options,
         )
