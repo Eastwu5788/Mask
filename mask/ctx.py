@@ -14,7 +14,8 @@ from .globals import (
     _request_ctx_stack,
 )
 from .wrappers import Request
-
+if t.TYPE_CHECKING:
+    from mask import Mask  # pylint: disable=unused-import
 
 _sentinel = object()
 
@@ -53,7 +54,7 @@ class AppContext:
 
 class RequestContext:
 
-    def __init__(self, app: "Faker", params=None, context=None) -> None:
+    def __init__(self, app: "Mask", params=None, context=None) -> None:
         """ 创建请求上下文
         """
         self.app = app

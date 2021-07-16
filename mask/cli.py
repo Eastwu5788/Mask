@@ -6,8 +6,9 @@
 # @Time: '2021/7/6 10:17 上午'
 # sys
 import os
-import pkg_resources
+import sys
 import typing as t
+import pkg_resources
 # 3p
 import click
 from grpc_tools import protoc
@@ -24,8 +25,7 @@ def _expand_path(path: str) -> t.Optional[str]:
         interpolated = os.path.expanduser(os.path.expandvars(path))
         if interpolated == path:
             return interpolated
-        else:
-            path = interpolated
+        path = interpolated
 
 
 def _expand_multiple(objs: t.Union[t.List, t.Tuple, t.Set]) -> list:
@@ -80,8 +80,7 @@ def _build_protobuf(proto_file, python_out, strict_mode=False):
     if protoc.main(command) != 0:
         if strict_mode:
             raise Exception('error: {} failed'.format(command))
-        else:
-            sys.stderr.write('warning: {} failed'.format(command))
+        sys.stderr.write('warning: {} failed'.format(command))
         return
 
     proto_file_name = os.path.split(proto_file)[-1].split(".")[0]

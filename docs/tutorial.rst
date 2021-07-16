@@ -64,6 +64,45 @@ ProtoBuf
 * TODO: 提供多样性的`ProtoBuf`判别规则，用于忽略特定的文件和文件夹扫描。
 * TODO: 提供`cli`命令行用于自动编译`.proto`文件。
 
+Cli
+----------
+
+`Mask` 支持 `cli` 命令行用于自动化编译 `ProtoBuf` 文件, 您可以使用 `mask --help` 查看详细的帮助选项.
+
+
+`mask compile` 用于编译指定的 `ProtoBuf` 文件，并将生成的 `.py` 文件存储到 `--python_out` 指定的路径中，如果不指定输出路径，则输出到 `.proto` 文件相同的
+位置.
+
+
+.. code-block:: shell
+
+   mask compile -p test.proto  --python_out=.
+
+当您有大量 `.proto` 文件需要编译时，您可以使用 `mask package` 命令。该命令会自动查找指定 `package` 下的所有 `.proto` 文件，并将其进行编译。
+
+
+.. code-block:: shell
+
+    mask package --help
+
+
+.. code-block:: shell
+
+    mask package -p  ~/path/examples
+
+`mask package` 支持的参数如下:
+
+
+=================== ========================================================
+    Params               Intro
+=================== ========================================================
+ -p/--package_root        Package root path
+ --exclude_path           The path that you don't want to scan
+ --exclude_file           The `ProtoBuf` file you don't want to compile
+ --package_out            Compiled python file output path
+=================== ========================================================
+
+
 
 Application Setup
 --------------------
